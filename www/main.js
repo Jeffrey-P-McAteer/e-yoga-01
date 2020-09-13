@@ -39,7 +39,7 @@ function main() {
             var height_m = 0.75 + (Math.sin(now_ms / 4000) * 0.70);
             //console.log("now_ms", now_ms, "height_m", height_m);
             sphere1.setPositionWithLocalVector( new BABYLON.Vector3(2.0, height_m, 2.0) );
-        }, 60);
+        }, 20);
 
         let actionManager = new BABYLON.ActionManager(scene);
         sphere1.actionManager = actionManager;
