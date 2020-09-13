@@ -208,6 +208,27 @@ function main() {
         var vrHelper = scene.createDefaultVRExperience();
         vrHelper.enableInteractions();
 
+        vrHelper.raySelectionPredicate = function (mesh) {
+          if (mesh.name.indexOf("ground") !== -1) {
+            return true; // The only meshes we care about are those containing "ground" in their names
+          }
+          return false;
+        };
+
+        // This ought to fire on the daydream/oculus controller clicks...
+        vrHelper.onNewMeshPicked.add(function (pickInfo) {
+            if (pickInfo.pickedMesh.name === 'ground' && pickInfo.pickedPoint) {
+                // Move locator(s) ([0] gets most recent pos, [num_ground_locators-1] is the oldest)
+                // Assign the [0] position to [1] etc...
+                for (var i=0; i<num_ground_locators-1; i++) {
+                    ground_locators[i+1].setPositionWithLocalVector( ground_locators[i].absolutePosition );
+                }
+                // Add new pos
+                ground_locators[0].setPositionWithLocalVector( pickInfo.pickedPoint );
+
+            }
+        });
+
         var have_registered_first_vr_controller = false;
         vrHelper.onControllerMeshLoaded.add(function (webVRController) {
             if (!have_registered_first_vr_controller) {
