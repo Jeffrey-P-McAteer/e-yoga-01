@@ -91,9 +91,17 @@ function main() {
             sphere2.material = red_material;
         }));
 
+
+
+        var ground_material = new BABYLON.StandardMaterial("ground_material", scene);
+        ground_material.diffuseColor = new BABYLON.Color3(0.3, 0.3, 0.3);
+        ground_material.specularColor = new BABYLON.Color3(0.3, 0.3, 0.3);
+        ground_material.emissiveColor = new BABYLON.Color3(0, 0, 0);
+        ground_material.ambientColor = new BABYLON.Color3(0.3, 0.3, 0.3);
+
         var ground = BABYLON.MeshBuilder.CreateBox("ground", {width: 8, height: 0.1, depth: 8}, scene);
         ground.setPositionWithLocalVector( new BABYLON.Vector3(0, -0.05, 0) );
-        ground.background = "grey";
+        ground.material = ground_material;
 
         // Async call
         // BABYLON.SceneLoader.Append("https://www.babylonjs.com/Scenes/Mansion/",
