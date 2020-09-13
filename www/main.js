@@ -103,6 +103,54 @@ function main() {
         ground.setPositionWithLocalVector( new BABYLON.Vector3(0, -0.05, 0) );
         ground.material = ground_material;
 
+        var ground_locator = BABYLON.MeshBuilder.CreateSphere("ground_locator", {diameter:0.1}, scene);
+        ground_locator.material = blue_material_hover;
+
+        // var onpickAction = new BABYLON.ExecuteCodeAction(
+        //     BABYLON.ActionManager.OnPickTrigger,
+        //     function(evt) {
+        //         //console.log("(",evt.pointerX,",",evt.pointerY,")");  
+        //         console.log("evt=",evt);
+        //         ground_locator.setPositionWithLocalVector( new BABYLON.Vector3(-2.0, 0.0, 2.0) );
+        //     }
+        // );
+        // ground.actionManager = new BABYLON.ActionManager(scene);
+        // ground.actionManager.registerAction(onpickAction);
+
+        scene.onPointerObservable.add(function (pointerInfo) {
+            switch (pointerInfo.type) {
+                case BABYLON.PointerEventTypes.POINTERDOWN:
+                    console.log("POINTER DOWN");
+                    // See if we clicked on ground + if so move ground_locator
+                    if (pointerInfo.pickInfo) {
+                        if (pointerInfo.pickInfo.pickedPoint) {
+                            ground_locator.setPositionWithLocalVector( pointerInfo.pickInfo.pickedPoint );
+                        }
+                    }
+
+                    break;
+                case BABYLON.PointerEventTypes.POINTERUP:
+                    console.log("POINTER UP");
+                    break;
+                case BABYLON.PointerEventTypes.POINTERMOVE:
+                    console.log("POINTER MOVE");
+                    break;
+                case BABYLON.PointerEventTypes.POINTERWHEEL:
+                    console.log("POINTER WHEEL");
+                    break;
+                case BABYLON.PointerEventTypes.POINTERPICK:
+                    console.log("POINTER PICK");
+                    break;
+                case BABYLON.PointerEventTypes.POINTERTAP:
+                    console.log("POINTER TAP");
+                    break;
+                case BABYLON.PointerEventTypes.POINTERDOUBLETAP:
+                    console.log("POINTER DOUBLE-TAP");
+                    break;
+            }
+        });
+
+
         // Async call
         // BABYLON.SceneLoader.Append("https://www.babylonjs.com/Scenes/Mansion/",
         //     "Mansion.babylon", scene, function () {
