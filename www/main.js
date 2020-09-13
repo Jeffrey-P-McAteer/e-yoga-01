@@ -111,6 +111,27 @@ function main() {
             ground_locators[i].material = blue_material_hover;
         }
 
+        var pointerDragBehavior = new BABYLON.PointerDragBehavior({dragPlaneNormal: new BABYLON.Vector3(0,1,0)});
+        // Use drag plane in world space
+        pointerDragBehavior.useObjectOrientationForDragging = false;
+
+        // Listen to drag events
+        pointerDragBehavior.onDragStartObservable.add(function (event) {
+            console.log("dragStart", event);
+        });
+        pointerDragBehavior.onDragObservable.add(function (event) {
+            console.log("drag", event);
+            // the pointerDragBehavior object is assigning position data to ground_locators[0]
+            for (var i=0; i<num_ground_locators-1; i++) {
+                ground_locators[i+1].setPositionWithLocalVector( ground_locators[i].absolutePosition );
+            }
+        });
+        pointerDragBehavior.onDragEndObservable.add(function (event) {
+            console.log("dragEnd", event);
+        });
+
+        ground_locators[0].addBehavior(pointerDragBehavior);
+
         // This fires on ALL scene UI events
         scene.onPointerObservable.add(function (pointerInfo) {
             switch (pointerInfo.type) {
@@ -121,14 +142,13 @@ function main() {
                         // did we hit the ground and do we have a vec3?
                         if (pointerInfo.pickInfo.pickedMesh.name === 'ground' && pointerInfo.pickInfo.pickedPoint) {
                             // Move locator(s) ([0] gets most recent pos, [num_ground_locators-1] is the oldest)
-                            
                             // Assign the [0] position to [1] etc...
                             for (var i=0; i<num_ground_locators-1; i++) {
                                 ground_locators[i+1].setPositionWithLocalVector( ground_locators[i].absolutePosition );
                             }
-
                             // Add new pos
                             ground_locators[0].setPositionWithLocalVector( pointerInfo.pickInfo.pickedPoint );
+
                         }
                     }
 
@@ -139,17 +159,18 @@ function main() {
                     break;
 
                 case BABYLON.PointerEventTypes.POINTERMOVE:
-                    console.log("POINTER MOVE", pointerInfo); // TODO below pointerInfo.pickInfo.pickedMesh == null so we need to turn 2d coords into 3d maybe?
-                    var pickInfo = scene.pick(pointerInfo.event.x, pointerInfo.event.y);
-                    console.log("pickInfo", pickInfo);
-                    if (pickInfo.hit && pickInfo.pickedMesh.name === 'ground') {
-                        // Assign the [0] position to [1] etc...
-                        for (var i=0; i<num_ground_locators-1; i++) {
-                            ground_locators[i+1].setPositionWithLocalVector( ground_locators[i].absolutePosition );
-                        }
-                        // Add new pos
-                        ground_locators[0].setPositionWithLocalVector( pickInfo.pickedPoint );
-                    }
+                    console.log("POINTER MOVE", pointerInfo);
+                    // Below only works on browsers, not in a VR scene
+                    // var pickInfo = scene.pick(pointerInfo.event.x, pointerInfo.event.y);
+                    // console.log("pickInfo", pickInfo);
+                    // if (pickInfo.hit && pickInfo.pickedMesh.name === 'ground') {
+                    //     // Assign the [0] position to [1] etc...
+                    //     for (var i=0; i<num_ground_locators-1; i++) {
+                    //         ground_locators[i+1].setPositionWithLocalVector( ground_locators[i].absolutePosition );
+                    //     }
+                    //     // Add new pos
+                    //     ground_locators[0].setPositionWithLocalVector( pickInfo.pickedPoint );
+                    // }
                     break;
 
                 case BABYLON.PointerEventTypes.POINTERWHEEL:
