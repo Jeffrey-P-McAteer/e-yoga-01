@@ -201,7 +201,7 @@ function main() {
         //         VRHelper.enableInteractions();
         // });
 
-        scene.activeCamera.position = new BABYLON.Vector3(0,1.0,0); // player's head is 1 meter tall at 0,0
+        scene.activeCamera.position = new BABYLON.Vector3(0,2.0,0); // player's head is 2 meters tall at 0,0
 
         var VRHelper = scene.createDefaultVRExperience();
         VRHelper.enableInteractions();
