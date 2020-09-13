@@ -122,8 +122,10 @@ function main() {
                 case BABYLON.PointerEventTypes.POINTERDOWN:
                     console.log("POINTER DOWN");
                     // See if we clicked on ground + if so move ground_locator
-                    if (pointerInfo.pickInfo) {
-                        if (pointerInfo.pickInfo.pickedPoint) {
+                    if (pointerInfo.pickInfo && pointerInfo.pickInfo.pickedMesh) {
+                        // did we hit the ground and do we have a vec3?
+                        if (pointerInfo.pickInfo.pickedMesh.name === 'ground' && pointerInfo.pickInfo.pickedPoint) {
+                            // Move locator
                             ground_locator.setPositionWithLocalVector( pointerInfo.pickInfo.pickedPoint );
                         }
                     }
