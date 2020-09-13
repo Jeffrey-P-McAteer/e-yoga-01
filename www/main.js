@@ -76,8 +76,7 @@ function main() {
             var height_m = 0.75 + (Math.sin(now_ms / 5000) * 0.70);
             //console.log("now_ms", now_ms, "height_m", height_m);
             sphere2.setPositionWithLocalVector( new BABYLON.Vector3(-2.0, height_m, 2.0) );
-        }, 60);
-
+        }, 30);
 
         let actionManager2 = new BABYLON.ActionManager(scene);
         sphere2.actionManager = actionManager2;
@@ -103,20 +102,16 @@ function main() {
         ground.setPositionWithLocalVector( new BABYLON.Vector3(0, -0.05, 0) );
         ground.material = ground_material;
 
-        var ground_locator = BABYLON.MeshBuilder.CreateSphere("ground_locator", {diameter:0.1}, scene);
-        ground_locator.material = blue_material_hover;
+        var num_ground_locators = 12;
+        var ground_locators = [];
+        for (var i=0; i<num_ground_locators; i++) {
+            ground_locators.push(
+                BABYLON.MeshBuilder.CreateSphere("ground_locator_"+i, {diameter:0.1}, scene)
+            );
+            ground_locators[i].material = blue_material_hover;
+        }
 
-        // var onpickAction = new BABYLON.ExecuteCodeAction(
-        //     BABYLON.ActionManager.OnPickTrigger,
-        //     function(evt) {
-        //         //console.log("(",evt.pointerX,",",evt.pointerY,")");  
-        //         console.log("evt=",evt);
-        //         ground_locator.setPositionWithLocalVector( new BABYLON.Vector3(-2.0, 0.0, 2.0) );
-        //     }
-        // );
-        // ground.actionManager = new BABYLON.ActionManager(scene);
-        // ground.actionManager.registerAction(onpickAction);
-
+        // This fires on ALL scene UI events
         scene.onPointerObservable.add(function (pointerInfo) {
             switch (pointerInfo.type) {
                 case BABYLON.PointerEventTypes.POINTERDOWN:
@@ -125,27 +120,55 @@ function main() {
                     if (pointerInfo.pickInfo && pointerInfo.pickInfo.pickedMesh) {
                         // did we hit the ground and do we have a vec3?
                         if (pointerInfo.pickInfo.pickedMesh.name === 'ground' && pointerInfo.pickInfo.pickedPoint) {
-                            // Move locator
-                            ground_locator.setPositionWithLocalVector( pointerInfo.pickInfo.pickedPoint );
+                            // Move locator(s) ([0] gets most recent pos, [num_ground_locators-1] is the oldest)
+                            
+                            // Assign the [0] position to [1] etc...
+                            for (var i=0; i<num_ground_locators-1; i++) {
+                                ground_locators[i+1].setPositionWithLocalVector( ground_locators[i].absolutePosition );
+                            }
+
+                            // Add new pos
+                            ground_locators[0].setPositionWithLocalVector( pointerInfo.pickInfo.pickedPoint );
                         }
                     }
 
                     break;
+
                 case BABYLON.PointerEventTypes.POINTERUP:
                     console.log("POINTER UP");
                     break;
+
                 case BABYLON.PointerEventTypes.POINTERMOVE:
-                    console.log("POINTER MOVE");
+                    console.log("POINTER MOVE", pointerInfo); // TODO below pointerInfo.pickInfo.pickedMesh == null so we need to turn 2d coords into 3d maybe?
+                    // // See if we moved over the ground + if so move ground_locator
+                    // if (pointerInfo.pickInfo && pointerInfo.pickInfo.pickedMesh) {
+                    //     // did we hit the ground and do we have a vec3?
+                    //     if (pointerInfo.pickInfo.pickedMesh.name === 'ground' && pointerInfo.pickInfo.pickedPoint) {
+                    //         // Move locator(s) ([0] gets most recent pos, [num_ground_locators-1] is the oldest)
+                            
+                    //         // Assign the [0] position to [1] etc...
+                    //         for (var i=0; i<num_ground_locators-1; i++) {
+                    //             ground_locators[i+1].setPositionWithLocalVector( ground_locators[i].absolutePosition );
+                    //         }
+
+                    //         // Add new pos
+                    //         ground_locators[0].setPositionWithLocalVector( pointerInfo.pickInfo.pickedPoint );
+                    //     }
+                    // }
                     break;
+
                 case BABYLON.PointerEventTypes.POINTERWHEEL:
                     console.log("POINTER WHEEL");
                     break;
+
                 case BABYLON.PointerEventTypes.POINTERPICK:
                     console.log("POINTER PICK");
                     break;
+
                 case BABYLON.PointerEventTypes.POINTERTAP:
                     console.log("POINTER TAP");
                     break;
+
                 case BABYLON.PointerEventTypes.POINTERDOUBLETAP:
                     console.log("POINTER DOUBLE-TAP");
                     break;

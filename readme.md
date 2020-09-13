@@ -25,6 +25,16 @@ a single 6-dof controller as well. 2x 6-dof controllers are out of scope.
 python server.py
 ```
 
+# Docs
+
+See
+
+ - https://doc.babylonjs.com/api/globals
+ - https://doc.babylonjs.com/how_to/interactions#pointer-interactions
+ - https://doc.babylonjs.com/examples/
+ - https://doc.babylonjs.com/how_to/meshbehavior
+ 
+
 # Misc Info
 
 The server creates a `scratch` directory to store runtime data an it tries to
