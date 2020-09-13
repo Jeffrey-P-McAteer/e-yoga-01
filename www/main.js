@@ -101,6 +101,7 @@ function main() {
         var ground = BABYLON.MeshBuilder.CreateBox("ground", {width: 8, height: 0.1, depth: 8}, scene);
         ground.setPositionWithLocalVector( new BABYLON.Vector3(0, -0.05, 0) );
         ground.material = ground_material;
+        ground.isPickable = true;
 
         var num_ground_locators = 24;
         var ground_locators = [];
@@ -192,6 +193,7 @@ function main() {
         });
 
 
+
         // Async call
         // BABYLON.SceneLoader.Append("https://www.babylonjs.com/Scenes/Mansion/",
         //     "Mansion.babylon", scene, function () {
@@ -203,8 +205,29 @@ function main() {
 
         scene.activeCamera.position = new BABYLON.Vector3(0,2.0,0); // player's head is 2 meters tall at 0,0
 
-        var VRHelper = scene.createDefaultVRExperience();
-        VRHelper.enableInteractions();
+        var vrHelper = scene.createDefaultVRExperience();
+        vrHelper.enableInteractions();
+
+        var have_registered_first_vr_controller = false;
+        vrHelper.onControllerMeshLoaded.add(function (webVRController) {
+            if (!have_registered_first_vr_controller) {
+                have_registered_first_vr_controller = true;
+                setInterval(function () {
+                    var ray = new BABYLON.Ray(webVRController.pointer.absolutePosition, webVRController.pointer.forward, 1000);
+                    var pickInfo = scene.pickWithRay(ray);
+                    if (pickInfo.pickedMesh.name === 'ground' && pickInfo.pickedPoint) {
+                        // Move locator(s) ([0] gets most recent pos, [num_ground_locators-1] is the oldest)
+                        // Assign the [0] position to [1] etc...
+                        for (var i=0; i<num_ground_locators-1; i++) {
+                            ground_locators[i+1].setPositionWithLocalVector( ground_locators[i].absolutePosition );
+                        }
+                        // Add new pos
+                        ground_locators[0].setPositionWithLocalVector( pickInfo.pickedPoint );
+
+                    }
+                }, 500);
+            }
+        });
 
 
         return scene;
