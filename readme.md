@@ -10,11 +10,12 @@ a single 6-dof controller as well. 2x 6-dof controllers are out of scope.
 
 # Feature Status
 
- - [ ] Server returns some html document
- - [ ] Server returns VR-capable application
- - [ ] VR-capable application detects ray-cast pointer
- - [ ] ray-cast pointer can select individual objects
+ - [x] Server returns some html document
+ - [x] Server returns VR-capable application
+ - [x] VR-capable application detects ray-cast pointer
+ - [x] ray-cast pointer can select individual objects
  - [ ] individual object positions are returned to server
+ - [ ] think of more feature details
 
 
 # Running The Server
