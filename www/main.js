@@ -102,11 +102,11 @@ function main() {
         ground.setPositionWithLocalVector( new BABYLON.Vector3(0, -0.05, 0) );
         ground.material = ground_material;
 
-        var num_ground_locators = 12;
+        var num_ground_locators = 24;
         var ground_locators = [];
         for (var i=0; i<num_ground_locators; i++) {
             ground_locators.push(
-                BABYLON.MeshBuilder.CreateSphere("ground_locator_"+i, {diameter:0.1}, scene)
+                BABYLON.MeshBuilder.CreateSphere("ground_locator_"+i, {diameter:0.08}, scene)
             );
             ground_locators[i].material = blue_material_hover;
         }
@@ -140,21 +140,16 @@ function main() {
 
                 case BABYLON.PointerEventTypes.POINTERMOVE:
                     console.log("POINTER MOVE", pointerInfo); // TODO below pointerInfo.pickInfo.pickedMesh == null so we need to turn 2d coords into 3d maybe?
-                    // // See if we moved over the ground + if so move ground_locator
-                    // if (pointerInfo.pickInfo && pointerInfo.pickInfo.pickedMesh) {
-                    //     // did we hit the ground and do we have a vec3?
-                    //     if (pointerInfo.pickInfo.pickedMesh.name === 'ground' && pointerInfo.pickInfo.pickedPoint) {
-                    //         // Move locator(s) ([0] gets most recent pos, [num_ground_locators-1] is the oldest)
-                            
-                    //         // Assign the [0] position to [1] etc...
-                    //         for (var i=0; i<num_ground_locators-1; i++) {
-                    //             ground_locators[i+1].setPositionWithLocalVector( ground_locators[i].absolutePosition );
-                    //         }
-
-                    //         // Add new pos
-                    //         ground_locators[0].setPositionWithLocalVector( pointerInfo.pickInfo.pickedPoint );
-                    //     }
-                    // }
+                    var pickInfo = scene.pick(pointerInfo.event.x, pointerInfo.event.y);
+                    console.log("pickInfo", pickInfo);
+                    if (pickInfo.hit && pickInfo.pickedMesh.name === 'ground') {
+                        // Assign the [0] position to [1] etc...
+                        for (var i=0; i<num_ground_locators-1; i++) {
+                            ground_locators[i+1].setPositionWithLocalVector( ground_locators[i].absolutePosition );
+                        }
+                        // Add new pos
+                        ground_locators[0].setPositionWithLocalVector( pickInfo.pickedPoint );
+                    }
                     break;
 
                 case BABYLON.PointerEventTypes.POINTERWHEEL:
